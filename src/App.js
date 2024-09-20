@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+const KEY = "ae1cbcd5";
 
 const tempMovieData = [
   {
@@ -68,9 +70,7 @@ function Logo() {
   );
 }
 
-function Search() {
-  const [query, setQuery] = useState("");
-
+function Search({ query, setQuery }) {
   return (
     <input
       className="search"
@@ -195,17 +195,58 @@ function Main({ children }) {
 }
 
 export default function App() {
-  const [watched, setWatched] = useState(tempWatchedData);
-  const [movies, setMovies] = useState(tempMovieData);
+  const [query, setQuery] = useState("Matrix");
+  const [movies, setMovies] = useState([]);
+  const [watched, setWatched] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    async function fetchMovies() {
+      try {
+        setError("");
+        setIsLoading(true);
+        const res = await fetch(
+          `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
+        );
+
+        if (!res.ok) {
+          throw new Error("Something went wrong with fetching movies");
+        }
+
+        const data = await res.json();
+
+        if (data.Response === "False") throw new Error("Movie not found!");
+
+        setMovies(data.Search);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    if (!query) {
+      setMovies([]);
+      setError("");
+      return;
+    }
+
+    fetchMovies();
+    return () => console.log("Cleanup");
+  }, [query]);
+
   return (
     <>
       <NavBar>
-        <Search />
-        <NumResults moviesLength={movies.length} />
+        <Search query={query} setQuery={setQuery} />
+        <NumResults moviesLength={movies?.length} />
       </NavBar>
       <Main>
         <Box>
-          <MovieList movies={movies} />
+          {isLoading && <Loader />}
+          {!isLoading && !error && <MovieList movies={movies} />}
+          {error && <ErrorMessage message={error} />}
         </Box>
         <Box>
           <>
@@ -216,4 +257,12 @@ export default function App() {
       </Main>
     </>
   );
+}
+
+function Loader() {
+  return <p className="loader">Loading...</p>;
+}
+
+function ErrorMessage({ message }) {
+  return <p className="error">{message}</p>;
 }
