@@ -241,7 +241,10 @@ function MovieDetail({ selectedId, watched, onCloseMovie, onAddWatched }) {
     onCloseMovie();
   }
 
-  const isWatched = watched.find(movie =>)
+  const isWatched = watched.find((movie) => movie.imdbID === selectedId);
+  const watchedUserRating = watched.find(
+    (movie) => movie.imdbID === selectedId
+  )?.userRating;
 
   return (
     <div className="details">
@@ -265,21 +268,25 @@ function MovieDetail({ selectedId, watched, onCloseMovie, onAddWatched }) {
           </header>
 
           <section>
-            {selectedId !== movie.imdbID && (
-              <div className="rating">
-                <StarRating
-                  maxRating={10}
-                  size={24}
-                  onSetRating={setUserRating}
-                />
+            <div className="rating">
+              {!isWatched ? (
+                <>
+                  <StarRating
+                    maxRating={10}
+                    size={24}
+                    onSetRating={setUserRating}
+                  />
 
-                {userRating !== null && (
-                  <button className="btn-add" onClick={handleAdd}>
-                    Add to list
-                  </button>
-                )}
-              </div>
-            )}
+                  {userRating !== null && (
+                    <button className="btn-add" onClick={handleAdd}>
+                      Add to list
+                    </button>
+                  )}
+                </>
+              ) : (
+                <p>You rated this movie {watchedUserRating}</p>
+              )}
+            </div>
             <p>
               <em>{plot}</em>
             </p>
