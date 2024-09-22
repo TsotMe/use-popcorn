@@ -217,7 +217,6 @@ function MovieDetail({ selectedId, watched, onCloseMovie, onAddWatched }) {
 
       const data = await res.json();
 
-      console.log(data);
       setMovie(data);
 
       setIsoading(false);
