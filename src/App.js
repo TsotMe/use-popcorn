@@ -236,6 +236,14 @@ function MovieDetail({ selectedId, watched, onCloseMovie, onAddWatched }) {
     getMovieDetails();
   }, [selectedId]);
 
+  useEffect(() => {
+    if (!title) return;
+
+    document.title = `Movie | ${title}`;
+
+    return () => (document.title = "Use Popcorn");
+  }, [title]);
+
   function handleAdd() {
     const newWatchedMovie = {
       imdbID: movie.imdbID,
