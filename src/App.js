@@ -377,6 +377,7 @@ export default function App() {
       return;
     }
 
+    handleCloseMovie();
     fetchMovies();
     return () => controller.abort();
   }, [query]);
