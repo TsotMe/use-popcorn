@@ -3,7 +3,7 @@ import StarRating from "./StarRating";
 import Loader from "./Loader";
 import { useKey } from "../useKey";
 
-const KEY = "ae1cbcd5";
+const KEY = process.env.REACT_APP_OMDB_API_KEY;
 
 export default function MovieDetail({
   selectedId,
@@ -37,7 +37,7 @@ export default function MovieDetail({
     async function getMovieDetails() {
       setIsoading(true);
       const res = await fetch(
-        `http://www.omdbapi.com/?apikey=${KEY}&i=${selectedId}`
+        `https://www.omdbapi.com/?apikey=${KEY}&i=${selectedId}`
       );
 
       const data = await res.json();
